@@ -1,0 +1,22 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t cyran/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true cyran/react-test npm test
+
+after_sucess:
+  - docker build -t cyran/multi-client ./client
+  - docker build -t cyran/multi-nginx ./nginx
+  - docker build -t cyran/multi-server ./server
+  - docker build -t cyran/multi-worker ./worker
+  # Log in to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take the images and push them to dcker hub
+  - docker push cyran/multi-client
+  - docker push cyran/multi-nginx
+  - docker push cyran/multi-server
+  - docker push cyran/multi-worker
