@@ -1,6 +1,7 @@
 sudo: required
 services:
   - docker
+language: generic
 
 before_install:
   - docker build -t cyran/react-test -f ./client/Dockerfile.dev ./client
@@ -8,7 +9,7 @@ before_install:
 script:
   - docker run -e CI=true cyran/react-test npm test
 
-after_sucess:
+after_success:
   - docker build -t cyran/multi-client ./client
   - docker build -t cyran/multi-nginx ./nginx
   - docker build -t cyran/multi-server ./server
